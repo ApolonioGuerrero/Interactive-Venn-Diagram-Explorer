@@ -61,6 +61,22 @@
       fill: #ffffff;
     }
 
+    /* Ensure MathJax equations don't overflow their containers */
+    mjx-container {
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem; /* Prevent scrollbar clipping */
+    }
+    mjx-container::-webkit-scrollbar {
+      height: 6px;
+    }
+    mjx-container::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 4px;
+    }
+
     /* Animation for feedback appearance */
     @keyframes slideDown {
       from { opacity: 0; transform: translateY(-10px); }
@@ -112,16 +128,16 @@
     <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-300 grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
       
       <!-- Left Column: Prompt & Actions -->
-      <div class="lg:col-span-5 flex flex-col justify-between space-y-6">
+      <div class="lg:col-span-5 flex flex-col justify-between space-y-6 min-w-0">
         
         <div class="space-y-4">
           <h2 class="text-lg font-bold text-slate-800 uppercase tracking-wide border-b-2 border-slate-100 pb-2">
             Target Notation
           </h2>
           
-          <div class="bg-slate-50 border-2 border-slate-200 rounded-xl p-6 flex items-center justify-center min-h-[140px] shadow-inner">
+          <div class="bg-slate-50 border-2 border-slate-200 rounded-xl p-4 sm:p-6 flex items-center justify-center min-h-[140px] shadow-inner overflow-x-auto w-full">
             <!-- MathJax container for the expression -->
-            <div id="expression-display" class="text-3xl sm:text-4xl font-bold text-blue-950 text-center">
+            <div id="expression-display" class="text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-950 text-center w-full">
               \((B \cup C) \cap A^c\)
             </div>
           </div>
