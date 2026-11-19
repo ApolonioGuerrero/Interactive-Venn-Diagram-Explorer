@@ -2,7 +2,7 @@
 
 An interactive, web-based educational tool designed to help students master set theory and algebra of sets. By dynamically shading regions of a 3-set Venn diagram, students can test their knowledge of unions, intersections, complements, and set differences.
 
-![https://via.placeholder.com/800x400.png?text=Interactive+Venn+Diagram+Practice](https://github.com/ApolonioGuerrero/Interactive-Venn-Diagram-Explorer/blob/8d99e6e3bebaa0fe840951d4d532693b205ec3ea/Venn%20Diagram%20Explorer.png) *(Replace with an actual screenshot of the app)*
+![https://via.placeholder.com/800x400.png?text=Interactive+Venn+Diagram+Practice](https://github.com/ApolonioGuerrero/Interactive-Venn-Diagram-Explorer/blob/8d99e6e3bebaa0fe840951d4d532693b205ec3ea/Venn%20Diagram%20Explorer.png) 
 
 ## 🌟 Features
 
