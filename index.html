@@ -24,7 +24,7 @@
       options: { enableMenu: false }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
   <style>
     body {
@@ -61,20 +61,17 @@
       fill: #ffffff;
     }
 
-    /* Ensure MathJax equations don't overflow their containers */
+    /* Ensure MathJax equations scale dynamically and don't overflow */
     mjx-container {
       max-width: 100%;
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem; /* Prevent scrollbar clipping */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0.5rem 0;
     }
-    mjx-container::-webkit-scrollbar {
-      height: 6px;
-    }
-    mjx-container::-webkit-scrollbar-thumb {
-      background-color: #cbd5e1;
-      border-radius: 4px;
+    mjx-container svg {
+      max-width: 100% !important;
+      height: auto !important;
     }
 
     /* Animation for feedback appearance */
@@ -261,66 +258,108 @@
 
     // Formal definitions to dynamically guide students during productive struggle
     const OP_DEFS = [
-      { trigger: '\\cup', name: 'Union', notation_left: '\\(A \\cup B =\\)', notation_right: '\\(\\{x \\in U \\mid x \\in A \\text{ or } x \\in B\\}\\)', desc: 'The union combines all elements from the sets. If an element is in ANY of the sets involved, it belongs in the union.' },
-      { trigger: '\\cap', name: 'Intersection', notation_left: '\\(A \\cap B =\\)', notation_right: '\\(\\{x \\in U \\mid x \\in A \\text{ and } x \\in B\\}\\)', desc: 'The intersection requires elements to be strictly in BOTH (or all) sets. Look for the overlapping regions where the conditions are met simultaneously.' },
-      { trigger: '^c', name: 'Complement', notation_left: '\\(A^c =\\)', notation_right: '\\(\\{x \\in U \\mid x \\notin A\\}\\)', desc: 'The complement includes everything in the universal space that is NOT inside the specified set. Think of it as the strict "outside" of that set boundary.' },
-      { trigger: '-', name: 'Difference', notation_left: '\\(A - B =\\)', notation_right: '\\(\\{x \\in A \\mid x \\notin B\\}\\)', desc: 'The difference removes any elements of the second set from the first. Start with the first set, and take away anything that also belongs to the second.' }
+      { trigger: '\\cup', name: 'Union', notation_left: '\\(A \\cup B =\\)', notation_right: '\\(\\{x \\in U \\mid x \\in A \\text{ or } x \\in B\\}\\)', desc: 'The union includes all elements that are in A, in B, or in both. It combines the sets together.' },
+      { trigger: '\\cap', name: 'Intersection', notation_left: '\\(A \\cap B =\\)', notation_right: '\\(\\{x \\in U \\mid x \\in A \\text{ and } x \\in B\\}\\)', desc: 'The intersection includes only the elements that are in BOTH A and B simultaneously. It is the overlapping region.' },
+      { trigger: '^c', name: 'Complement', notation_left: '\\(A^c =\\)', notation_right: '\\(\\{x \\in U \\mid x \\notin A\\}\\)', desc: 'The complement includes everything in the universal set that is NOT inside the specified set. It is the exact opposite.' },
+      { trigger: '-', name: 'Difference', notation_left: '\\(A - B =\\)', notation_right: '\\(\\{x \\in A \\mid x \\notin B\\}\\)', desc: 'The set difference removes any elements of the second set from the first. Start with the first set, and take away anything that also belongs to the second.' }
     ];
 
-    // 3-Set Problem Bank
+    // 3-Set Problem Bank (64 mathematically curated cases)
     const QUESTION_BANK_3SET = {
       easy: [
-        { tex: "A", eval: (a,b,c) => a },
-        { tex: "B", eval: (a,b,c) => b },
-        { tex: "A \\cup B", eval: (a,b,c) => a || b },
-        { tex: "A \\cap B", eval: (a,b,c) => a && b },
-        { tex: "C^c", eval: (a,b,c) => !c },
-        { tex: "A - B", eval: (a,b,c) => a && !b },
-        { tex: "B \\cap C", eval: (a,b,c) => b && c }
+        { tex: "A", eval: (a,b,c) => a, equiv: "" },
+        { tex: "B", eval: (a,b,c) => b, equiv: "" },
+        { tex: "C", eval: (a,b,c) => c, equiv: "" },
+        { tex: "A^c", eval: (a,b,c) => !a, equiv: "U - A" },
+        { tex: "B^c", eval: (a,b,c) => !b, equiv: "U - B" },
+        { tex: "C^c", eval: (a,b,c) => !c, equiv: "U - C" },
+        { tex: "A \\cup B", eval: (a,b,c) => a || b, equiv: "" },
+        { tex: "A \\cup C", eval: (a,b,c) => a || c, equiv: "" },
+        { tex: "B \\cup C", eval: (a,b,c) => b || c, equiv: "" },
+        { tex: "A \\cap B", eval: (a,b,c) => a && b, equiv: "" },
+        { tex: "A \\cap C", eval: (a,b,c) => a && c, equiv: "" },
+        { tex: "B \\cap C", eval: (a,b,c) => b && c, equiv: "" },
+        { tex: "A - B", eval: (a,b,c) => a && !b, equiv: "A \\cap B^c" },
+        { tex: "A - C", eval: (a,b,c) => a && !c, equiv: "A \\cap C^c" },
+        { tex: "B - A", eval: (a,b,c) => b && !a, equiv: "B \\cap A^c" },
+        { tex: "B - C", eval: (a,b,c) => b && !c, equiv: "B \\cap C^c" },
+        { tex: "C - A", eval: (a,b,c) => c && !a, equiv: "C \\cap A^c" },
+        { tex: "C - B", eval: (a,b,c) => c && !b, equiv: "C \\cap B^c" }
       ],
       medium: [
-        { tex: "(A \\cup B)^c", eval: (a,b,c) => !(a || b) },
-        { tex: "A \\cap (B \\cup C)", eval: (a,b,c) => a && (b || c) },
-        { tex: "(A \\cap B) \\cup C", eval: (a,b,c) => (a && b) || c },
-        { tex: "A^c \\cap B", eval: (a,b,c) => !a && b },
-        { tex: "A \\cup B \\cup C", eval: (a,b,c) => a || b || c },
-        { tex: "A \\cap B \\cap C", eval: (a,b,c) => a && b && c },
-        { tex: "C - (A \\cup B)", eval: (a,b,c) => c && !(a || b) }
+        { tex: "A \\cup B \\cup C", eval: (a,b,c) => a || b || c, equiv: "" },
+        { tex: "A \\cap B \\cap C", eval: (a,b,c) => a && b && c, equiv: "" },
+        { tex: "(A \\cup B \\cup C)^c", eval: (a,b,c) => !(a || b || c), equiv: "A^c \\cap B^c \\cap C^c" },
+        { tex: "A \\cap (B \\cup C)", eval: (a,b,c) => a && (b || c), equiv: "(A \\cap B) \\cup (A \\cap C)" },
+        { tex: "B \\cap (A \\cup C)", eval: (a,b,c) => b && (a || c), equiv: "(B \\cap A) \\cup (B \\cap C)" },
+        { tex: "C \\cap (A \\cup B)", eval: (a,b,c) => c && (a || b), equiv: "(C \\cap A) \\cup (C \\cap B)" },
+        { tex: "A \\cup (B \\cap C)", eval: (a,b,c) => a || (b && c), equiv: "(A \\cup B) \\cap (A \\cup C)" },
+        { tex: "B \\cup (A \\cap C)", eval: (a,b,c) => b || (a && c), equiv: "(B \\cup A) \\cap (B \\cup C)" },
+        { tex: "C \\cup (A \\cap B)", eval: (a,b,c) => c || (a && b), equiv: "(C \\cup A) \\cap (C \\cup B)" },
+        { tex: "A - (B \\cup C)", eval: (a,b,c) => a && !(b || c), equiv: "A \\cap B^c \\cap C^c" },
+        { tex: "B - (A \\cup C)", eval: (a,b,c) => b && !(a || c), equiv: "A^c \\cap B \\cap C^c" },
+        { tex: "C - (A \\cup B)", eval: (a,b,c) => c && !(a || b), equiv: "A^c \\cap B^c \\cap C" },
+        { tex: "A - (B \\cap C)", eval: (a,b,c) => a && !(b && c), equiv: "(A - B) \\cup (A - C)" },
+        { tex: "B - (A \\cap C)", eval: (a,b,c) => b && !(a && c), equiv: "(B - A) \\cup (B - C)" },
+        { tex: "C - (A \\cap B)", eval: (a,b,c) => c && !(a && b), equiv: "(C - A) \\cup (C - B)" },
+        { tex: "(A \\cup B)^c", eval: (a,b,c) => !(a || b), equiv: "A^c \\cap B^c" },
+        { tex: "(A \\cup C)^c", eval: (a,b,c) => !(a || c), equiv: "A^c \\cap C^c" },
+        { tex: "(B \\cup C)^c", eval: (a,b,c) => !(b || c), equiv: "B^c \\cap C^c" },
+        { tex: "(A \\cap B)^c", eval: (a,b,c) => !(a && b), equiv: "A^c \\cup B^c" },
+        { tex: "(A \\cap C)^c", eval: (a,b,c) => !(a && c), equiv: "A^c \\cup C^c" },
+        { tex: "(B \\cap C)^c", eval: (a,b,c) => !(b && c), equiv: "B^c \\cup C^c" },
+        { tex: "(A \\cap B) - C", eval: (a,b,c) => (a && b) && !c, equiv: "A \\cap B \\cap C^c" },
+        { tex: "(A \\cap C) - B", eval: (a,b,c) => (a && c) && !b, equiv: "A \\cap B^c \\cap C" },
+        { tex: "(B \\cap C) - A", eval: (a,b,c) => (b && c) && !a, equiv: "A^c \\cap B \\cap C" }
       ],
       hard: [
-        { tex: "(B \\cup C) \\cap A^c", eval: (a,b,c) => (b || c) && !a },
-        { tex: "(A \\cup B) - C", eval: (a,b,c) => (a || b) && !c },
-        { tex: "(A^c \\cap B^c) \\cup C", eval: (a,b,c) => (!a && !b) || c },
-        { tex: "(A \\cap B) \\cup (B \\cap C) \\cup (A \\cap C)", eval: (a,b,c) => (a&&b) || (b&&c) || (a&&c) }, 
-        { tex: "(A \\cap B)^c \\cap C", eval: (a,b,c) => !(a && b) && c },
-        { tex: "(A \\cup B \\cup C)^c \\cup (A \\cap B \\cap C)", eval: (a,b,c) => !(a||b||c) || (a&&b&&c) } 
+        { tex: "(A \\cup B) \\cap C^c", eval: (a,b,c) => (a || b) && !c, equiv: "(A - C) \\cup (B - C)" },
+        { tex: "(A \\cup C) \\cap B^c", eval: (a,b,c) => (a || c) && !b, equiv: "(A - B) \\cup (C - B)" },
+        { tex: "(B \\cup C) \\cap A^c", eval: (a,b,c) => (b || c) && !a, equiv: "(B - A) \\cup (C - A)" },
+        { tex: "(A \\cup B) - (A \\cap B)", eval: (a,b,c) => (a || b) && !(a && b), equiv: "(A - B) \\cup (B - A)" },
+        { tex: "(B \\cup C) - (B \\cap C)", eval: (a,b,c) => (b || c) && !(b && c), equiv: "(B - C) \\cup (C - B)" },
+        { tex: "(A \\cup C) - (A \\cap C)", eval: (a,b,c) => (a || c) && !(a && c), equiv: "(A - C) \\cup (C - A)" },
+        { tex: "(A \\cap B) \\cup (B \\cap C) \\cup (A \\cap C)", eval: (a,b,c) => (a && b) || (b && c) || (a && c), equiv: "\\text{Regions in at least two sets}" },
+        { tex: "(A \\cap B \\cap C^c) \\cup (A \\cap B^c \\cap C) \\cup (A^c \\cap B \\cap C)", eval: (a,b,c) => (a && b && !c) || (a && !b && c) || (!a && b && c), equiv: "\\text{Regions in exactly two sets}" },
+        { tex: "(A \\cap B^c \\cap C^c) \\cup (A^c \\cap B \\cap C^c) \\cup (A^c \\cap B^c \\cap C)", eval: (a,b,c) => (a && !b && !c) || (!a && b && !c) || (!a && !b && c), equiv: "\\text{Regions in exactly one set}" },
+        { tex: "(A \\cup B \\cup C) - (A \\cap B \\cap C)", eval: (a,b,c) => (a || b || c) && !(a && b && c), equiv: "\\text{In at least one, but not all three}" },
+        { tex: "(A^c \\cap B^c) \\cup C", eval: (a,b,c) => (!a && !b) || c, equiv: "(A \\cup B)^c \\cup C" },
+        { tex: "(A^c \\cup B^c) \\cap C", eval: (a,b,c) => (!a || !b) && c, equiv: "C - (A \\cap B)" },
+        { tex: "A \\cup ((B - C) \\cup (C - B))", eval: (a,b,c) => a || (b !== c), equiv: "" },
+        { tex: "A \\cap ((B - C) \\cup (C - B))", eval: (a,b,c) => a && (b !== c), equiv: "(A \\cap B) - C \\cup (A \\cap C) - B" },
+        { tex: "(A - B) \\cup (B - C) \\cup (C - A)", eval: (a,b,c) => (a && !b) || (b && !c) || (c && !a), equiv: "(A \\cap B \\cap C)^c \\cap (A \\cup B \\cup C)" },
+        { tex: "(A \\cap B)^c \\cap C", eval: (a,b,c) => !(a && b) && c, equiv: "C - (A \\cap B)" },
+        { tex: "(A \\cup B)^c \\cup C", eval: (a,b,c) => !(a || b) || c, equiv: "(A^c \\cap B^c) \\cup C" },
+        { tex: "(A^c \\cap B) \\cup (A \\cap B^c) \\cup C", eval: (a,b,c) => (!a && b) || (a && !b) || c, equiv: "((A - B) \\cup (B - A)) \\cup C" },
+        { tex: "(A \\cup B) \\cap (B \\cup C) \\cap (A \\cup C)", eval: (a,b,c) => (a || b) && (b || c) && (a || c), equiv: "(A \\cap B) \\cup (B \\cap C) \\cup (A \\cap C)" },
+        { tex: "(A - B) \\cap (A - C)", eval: (a,b,c) => (a && !b) && (a && !c), equiv: "A - (B \\cup C)" },
+        { tex: "(A - B) \\cup (A - C)", eval: (a,b,c) => (a && !b) || (a && !c), equiv: "A - (B \\cap C)" }
       ]
     };
 
-    // 2-Set Problem Bank
+    // 2-Set Problem Bank (All 16 possible combinations covered)
     const QUESTION_BANK_2SET = {
       easy: [
-        { tex: "A", eval: (a,b) => a },
-        { tex: "B", eval: (a,b) => b },
-        { tex: "A \\cup B", eval: (a,b) => a || b },
-        { tex: "A \\cap B", eval: (a,b) => a && b },
-        { tex: "A^c", eval: (a,b) => !a },
-        { tex: "B^c", eval: (a,b) => !b },
-        { tex: "A - B", eval: (a,b) => a && !b },
-        { tex: "B - A", eval: (a,b) => b && !a }
+        { tex: "\\emptyset", eval: (a,b) => false, equiv: "A \\cap A^c" },
+        { tex: "U", eval: (a,b) => true, equiv: "A \\cup A^c" },
+        { tex: "A", eval: (a,b) => a, equiv: "" },
+        { tex: "B", eval: (a,b) => b, equiv: "" },
+        { tex: "A \\cup B", eval: (a,b) => a || b, equiv: "" },
+        { tex: "A \\cap B", eval: (a,b) => a && b, equiv: "" },
+        { tex: "A^c", eval: (a,b) => !a, equiv: "U - A" },
+        { tex: "B^c", eval: (a,b) => !b, equiv: "U - B" },
+        { tex: "A - B", eval: (a,b) => a && !b, equiv: "A \\cap B^c" },
+        { tex: "B - A", eval: (a,b) => b && !a, equiv: "B \\cap A^c" }
       ],
       medium: [
-        { tex: "(A \\cup B)^c", eval: (a,b) => !(a || b) },
-        { tex: "(A \\cap B)^c", eval: (a,b) => !(a && b) },
-        { tex: "A^c \\cap B", eval: (a,b) => !a && b },
-        { tex: "A \\cup B^c", eval: (a,b) => a || !b },
-        { tex: "A^c \\cup B", eval: (a,b) => !a || b }
+        { tex: "(A \\cup B)^c", eval: (a,b) => !(a || b), equiv: "A^c \\cap B^c \\quad \\text{(De Morgan's Law)}" },
+        { tex: "(A \\cap B)^c", eval: (a,b) => !(a && b), equiv: "A^c \\cup B^c \\quad \\text{(De Morgan's Law)}" },
+        { tex: "A \\cup B^c", eval: (a,b) => a || !b, equiv: "(B - A)^c" },
+        { tex: "B \\cup A^c", eval: (a,b) => b || !a, equiv: "(A - B)^c" }
       ],
       hard: [
-        { tex: "(A - B) \\cup (B - A)", eval: (a,b) => (a && !b) || (b && !a) }, // Symmetric Difference
-        { tex: "A^c \\cap B^c", eval: (a,b) => !a && !b }, // De Morgan's
-        { tex: "A^c \\cup B^c", eval: (a,b) => !a || !b }, // De Morgan's
-        { tex: "(A \\cap B) \\cup (A \\cup B)^c", eval: (a,b) => (a && b) || !(a || b) } // Center + Outside
+        { tex: "(A - B) \\cup (B - A)", eval: (a,b) => (a && !b) || (b && !a), equiv: "(A \\cup B) - (A \\cap B)" },
+        { tex: "(A \\cap B) \\cup (A \\cup B)^c", eval: (a,b) => (a && b) || !(a || b), equiv: "((A - B) \\cup (B - A))^c" } 
       ]
     };
 
@@ -449,11 +488,26 @@
         const missing = correctIds.filter(id => !userIds.includes(id));
         const extra = userIds.filter(id => !correctIds.includes(id));
 
+        const q = this.currentQuestion;
+        let equivHtml = '';
+        if (q.equiv) {
+            equivHtml = `
+              <div class="mt-5 p-3.5 bg-indigo-50/80 border border-indigo-200 rounded-lg">
+                <p class="text-[11px] font-bold text-indigo-900 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  Mathematical Insight
+                </p>
+                <p class="text-sm font-medium text-indigo-900 leading-snug">
+                  Did you know? The expression \\(${q.tex}\\) is mathematically equivalent to \\(${q.equiv}\\). They describe the exact same regions!
+                </p>
+              </div>`;
+        }
+
         if (missing.length === 0 && extra.length === 0) {
           // Success
           this.streak++;
           this.updateStreakUI();
-          this.showFeedback('success', "Fantastic Job! \uD83C\uDF1F", "You correctly applied the mathematical logic to perfectly shade the diagram. Your effort and persistence are paying off!");
+          this.showFeedback('success', "Fantastic Job! \uD83C\uDF1F", "You correctly applied the mathematical logic to perfectly shade the diagram. Your effort and persistence are paying off!", equivHtml);
         } else {
           // Incorrect: Employ Growth Mindset & Productive Struggle Logic
           this.streak = 0;
@@ -499,6 +553,10 @@
              detailsHtml += `<li>${h}</li>`;
           });
           detailsHtml += `</ul>`;
+          
+          // Append mathematical equivalences to the error state as well, for study purposes
+          detailsHtml += equivHtml;
+          
           detailsHtml += `<p class="text-sm font-bold text-rose-900 mt-4 bg-rose-100/50 p-2 rounded-lg inline-block">Keep trying! You can toggle the regions on the diagram and check again.</p>`;
           
           this.showFeedback('error', "Not quite right yet...", "Let's use this as a learning opportunity.", detailsHtml);
