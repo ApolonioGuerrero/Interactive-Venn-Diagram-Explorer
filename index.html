@@ -325,15 +325,15 @@
         { tex: "(A \\cup B \\cup C) - (A \\cap B \\cap C)", eval: (a,b,c) => (a || b || c) && !(a && b && c), equiv: "\\text{In at least one, but not all three}" },
         { tex: "(A^c \\cap B^c) \\cup C", eval: (a,b,c) => (!a && !b) || c, equiv: "(A \\cup B)^c \\cup C" },
         { tex: "(A^c \\cup B^c) \\cap C", eval: (a,b,c) => (!a || !b) && c, equiv: "C - (A \\cap B)" },
-        { tex: "A \\cup ((B - C) \\cup (C - B))", eval: (a,b,c) => a || (b !== c), equiv: "" },
+        { tex: "A \\cup ((B - C) \\cup (C - B))", eval: (a,b,c) => a || (b !== c), equiv: "A \\cup (B \\cap C^c) \\cup (C \\cap B^c)" },
         { tex: "A \\cap ((B - C) \\cup (C - B))", eval: (a,b,c) => a && (b !== c), equiv: "(A \\cap B) - C \\cup (A \\cap C) - B" },
-        { tex: "(A - B) \\cup (B - C) \\cup (C - A)", eval: (a,b,c) => (a && !b) || (b && !c) || (c && !a), equiv: "(A \\cap B \\cap C)^c \\cap (A \\cup B \\cup C)" },
-        { tex: "(A \\cap B)^c \\cap C", eval: (a,b,c) => !(a && b) && c, equiv: "C - (A \\cap B)" },
-        { tex: "(A \\cup B)^c \\cup C", eval: (a,b,c) => !(a || b) || c, equiv: "(A^c \\cap B^c) \\cup C" },
-        { tex: "(A^c \\cap B) \\cup (A \\cap B^c) \\cup C", eval: (a,b,c) => (!a && b) || (a && !b) || c, equiv: "((A - B) \\cup (B - A)) \\cup C" },
-        { tex: "(A \\cup B) \\cap (B \\cup C) \\cap (A \\cup C)", eval: (a,b,c) => (a || b) && (b || c) && (a || c), equiv: "(A \\cap B) \\cup (B \\cap C) \\cup (A \\cap C)" },
-        { tex: "(A - B) \\cap (A - C)", eval: (a,b,c) => (a && !b) && (a && !c), equiv: "A - (B \\cup C)" },
-        { tex: "(A - B) \\cup (A - C)", eval: (a,b,c) => (a && !b) || (a && !c), equiv: "A - (B \\cap C)" }
+        { tex: "(A \cap B)^c \cap C", eval: (a,b,c) => !(a && b) && c, equiv: "C - (A \cap B)" },
+        { tex: "(A \cup B)^c \cup C", eval: (a,b,c) => !(a || b) || c, equiv: "(A^c \cap B^c) \cup C" },
+        { tex: "(A^c \cap B) \cup (A \cap B^c) \cup C", eval: (a,b,c) => (!a && b) || (a && !b) || c, equiv: "((A - B) \cup (B - A)) \cup C" },
+        { tex: "(A \cup B) \cap (B \cup C) \cap (A \cup C)", eval: (a,b,c) => (a || b) && (b || c) && (a || c), equiv: "(A \cap B) \cup (B \cap C) \cup (A \cap C)" },
+        { tex: "(A - B) \cap (A - C)", eval: (a,b,c) => (a && !b) && (a && !c), equiv: "A - (B \cup C)" },
+        { tex: "(A - B) \cup (A - C)", eval: (a,b,c) => (a && !b) || (a && !c), equiv: "A - (B \cap C)" },
+        { tex: "(A \\cup B \\cup C)^c \\cup (A \\cap B \\cap C)", eval: (a,b,c) => !(a || b || c) || (a && b && c), equiv: "\\text{Outside all, or inside all}" }
       ]
     };
 
